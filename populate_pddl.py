@@ -222,21 +222,6 @@ class ProblemGenerator(ROS2Node):
                     ['f_follow_pipeline_waypoints','function'],
                     ['f_maintain_motion','function']])
         
-        # self.call_predicate_service('function_not_grounded',
-                # [['f_maintain_motion','function']])
-
-        # self.call_predicate_service('function_not_grounded',
-                # [['f_go_to_recharge_waypoints','function']])
-
-        # self.call_predicate_service('function_not_grounded',
-                # [['f_search_pipeline_waypoints','function']])
-
-        # self.call_predicate_service('function_not_grounded',
-                # [['f_follow_pipeline_waypoints','function']])
-
-        self.call_predicate_service('not_occupied',
-                [['bluerov','uuv']])
-
         self.call_function_service('speed',
                 [['fd_all_thrusters','functiondesign']], 1.)
 
@@ -258,25 +243,25 @@ class ProblemGenerator(ROS2Node):
         self.call_function_service('speed',
                 [['fd_generate_follow_wp','functiondesign']], 5.)
 
-        self.call_function_service('efficiency',
+        self.call_function_service('battery_usage',
                 [['fd_all_thrusters','functiondesign']], 1.)
 
-        self.call_function_service('efficiency',
+        self.call_function_service('battery_usage',
                 [['fd_generate_follow_wp','functiondesign']], 5.)
 
-        self.call_function_service('efficiency',
+        self.call_function_service('battery_usage',
                 [['fd_recover','functiondesign']], 5.)
 
-        self.call_function_service('efficiency',
+        self.call_function_service('battery_usage',
                 [['fd_spiral_low','functiondesign']], 30.)
 
-        self.call_function_service('efficiency',
+        self.call_function_service('battery_usage',
                 [['fd_spiral_medium','functiondesign']], 35.)
 
-        self.call_function_service('efficiency',
+        self.call_function_service('battery_usage',
                 [['fd_spiral_high','functiondesign']], 40.)
 
-        self.call_function_service('efficiency',
+        self.call_function_service('battery_usage',
                 [['fd_generate_follow_wp','functiondesign']], 30.)
 
         self.call_function_service('battery_level',
