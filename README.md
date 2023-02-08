@@ -10,8 +10,7 @@ Download the plansys2 package
 In a terminal, run the plansys2 system with the inspect_pl_domain file loaded in:
 
 ```bash
-ros2 launch plansys2_bringup plansys2_bringup_launch_distributed.py
-model_file:=path_to_file/inspect_pl_domain.pddl
+ros2 launch plansys2_bringup plansys2_bringup_launch_distributed.py model_file:=path_to_file/inspect_pl_domain.pddl
 ```
 
 In a new terminal populate the problem_expert:
