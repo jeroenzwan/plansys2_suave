@@ -20,8 +20,8 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rclcpp_action/rclcpp_action.hpp"
 
-#include "mros2_msgs/action/ControlQos.hpp"
-#include "std_msgs/msg/Bool.hpp"
+#include "mros2_msgs/action/control_qos.hpp"
+#include "std_msgs/msg/bool.hpp"
 #include<string.h>
 #include<ctime>
 
@@ -39,7 +39,7 @@ public:
     detected_subscriber = this->create_subscription<std_msgs::msg::Bool>(
       "pipeline/inspected", 10, std::bind(&InspectAction::detected_callback, this, _1), client_cb_group_
     );
-    client = this->create_cliet<mros2_msgs::srv::ControlQos>("mros/objective");
+    client = this->create_cliet<mros2_msgs::action::ControlQos>("mros/objective");
     while (!client->wait_for_service(0s)) {
       if (!rclcpp::ok()) {
         RCLCPP_ERROR(rclcpp::get_logger("rclcpp"), "Interrupted while waiting for the service. Exiting.");
@@ -61,7 +61,7 @@ private:
     obj_2<<"obj_"<<function_2;
 
     if not_started {
-      mros2_msgs::srv::ControlQos request = std::make_shared<mros2_msgs:srv::ControlQos::request>();
+      mros2_msgs::action::ControlQos request = std::make_shared<mros2_msgs:action::ControlQos::request>();
       request.qos_expected.objective_type = function_1;
       obj_1<<"_"<<this->get_clock()->now();
       request.qos_expected.objective_id = obj_1.str();
@@ -90,7 +90,7 @@ private:
 
   bool not_started;
   bool pipeline_inspected;
-  rclcpp::Client<mros2_msgs::srv::ControlQos>::SharedPtr client; 
+  rclcpp::Client<mros2_msgs::action::ControlQos>::SharedPtr client; 
   rclcpp::Subscription<<<std_msgs::msg::Bool>::SharedPtr detected_subscriber;
 };
 

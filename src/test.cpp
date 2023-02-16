@@ -6,7 +6,6 @@
 #include<sstream>
 #include<chrono>
 #include<ctime>
-#include "/opt/ros/humble/include/rclcpp/rclcpp/rclcpp.hpp"
 
 
 int main(int argc, char ** argv)
