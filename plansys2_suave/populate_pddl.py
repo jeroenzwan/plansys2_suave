@@ -170,14 +170,14 @@ class ProblemGenerator(ROS2Node):
 
         self.call_predicate_service('pipeline_not_inspected', [['pl1','pipeline']])
 
-        self.call_predicate_service('recharge_available',
-                [['fd_recharge','functiondesign']])
+        # self.call_predicate_service('recharge_available',
+                # [['fd_recharge','functiondesign']])
 
-        self.call_predicate_service('search_available',
-                [['fd_search_pipeline','functiondesign']])
+        # self.call_predicate_service('search_available',
+                # [['fd_search_pipeline','functiondesign']])
 
-        self.call_predicate_service('follow_available',
-                [['fd_follow_pipeline','functiondesign']])
+        # self.call_predicate_service('follow_available',
+                # [['fd_follow_pipeline','functiondesign']])
 
         self.call_predicate_service('fd_available',
                 [['fd_all_thrusters','functiondesign'],
@@ -207,17 +207,17 @@ class ProblemGenerator(ROS2Node):
                 [['fd_generate_follow_wp','functiondesign'],
                     ['f_follow_pipeline_waypoints','function']])
 
-        self.call_predicate_service('requires_f',
+        self.call_predicate_service('recharge_requires_f',
                 [['fd_recharge','functiondesign'],
                     ['f_go_to_recharge_waypoints','function'],
                     ['f_maintain_motion','function']])
 
-        self.call_predicate_service('requires_f',
+        self.call_predicate_service('search_requires_f',
                 [['fd_search_pipeline','functiondesign'],
                     ['f_search_pipeline_waypoints','function'],
                     ['f_maintain_motion','function']])
 
-        self.call_predicate_service('requires_f',
+        self.call_predicate_service('follow_requires_f',
                 [['fd_follow_pipeline','functiondesign'],
                     ['f_follow_pipeline_waypoints','function'],
                     ['f_maintain_motion','function']])
