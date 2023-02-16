@@ -1,4 +1,4 @@
-# plansys_suave
+# plansys2_suave
 PDDL files for plansys2
 
 Step 1:
