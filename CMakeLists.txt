@@ -23,28 +23,21 @@ set(dependencies
     mros2_msgs
 )
 
-# include_directories(
-#   include
-# )
-
 add_executable(search_action_node src/search_action_node.cpp)
 ament_target_dependencies(search_action_node ${dependencies})
-target_link_libraries(search_action_node ${PROJECT_NAME})
 
-# add_executable(inspect_action_node src/inspect_action_node.cpp)
-# ament_target_dependencies(inspect_action_node ${dependencies})
-# target_link_libraries(inspect_action_node ${PROJECT_NAME})
+add_executable(inspect_action_node src/inspect_action_node.cpp)
+ament_target_dependencies(inspect_action_node ${dependencies})
 
-# add_executable(recharge_action_node src/recharge_action_node.cpp)
-# ament_target_dependencies(recharge_action_node ${dependencies})
-# target_link_libraries(recharge_action_node ${PROJECT_NAME})
+add_executable(recharge_action_node src/recharge_action_node.cpp)
+ament_target_dependencies(recharge_action_node ${dependencies})
 
 install(DIRECTORY launch pddl DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
   search_action_node
-  # inspect_action_node
-  # recharge_action_node
+  inspect_action_node
+  recharge_action_node
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib
   RUNTIME DESTINATION lib/${PROJECT_NAME}
@@ -57,11 +50,6 @@ if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
 endif()
 
-# install(DIRECTORY include/
-#   DESTINATION include/
-# )
-
-# ament_export_include_directories(include)
 ament_export_dependencies(${dependencies})
 
 ament_package()
