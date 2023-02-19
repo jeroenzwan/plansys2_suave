@@ -10,9 +10,6 @@
 
 int main(int argc, char ** argv)
 {
-  rclcpp::Node node = rclcpp::Node("node1")
-  rclcpp::Time start_time = node->get_clock()->now();
-  std::cout<<start_time<<std::endl;
   std::stringstream obj_1;
   std::stringstream obj_2;
   auto function_1 = "f_mock1";

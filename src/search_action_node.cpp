@@ -37,9 +37,10 @@ public:
   using GoalHandleControlQos = rclcpp_action::ClientGoalHandle<ControlQos>;
 
   SearchAction()
-  : plansys2::ActionExecutorClient("search_pipeline", 250ms)
+  : plansys2::ActionExecutorClient("search_pipeline", 500ms)
   {
-    not_started = false;
+    RCLCPP_INFO(this->get_logger(), "At beginning of Startup");
+    not_started = true;
     pipeline_detected = false;
     client_cb_group_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
     auto sub_opt = rclcpp::SubscriptionOptions();
@@ -48,6 +49,7 @@ public:
       "pipeline/detected", 10, std::bind(&SearchAction::detected_callback, this, std::placeholders::_1), sub_opt
     );
     this->client = rclcpp_action::create_client<ControlQos>(this,"mros/objective");
+    RCLCPP_INFO(this->get_logger(), "At end of Startup");
   }
 
 private:
@@ -57,8 +59,8 @@ private:
     send_feedback(0.0, "Started search action");
     std::stringstream obj_1;
     std::stringstream obj_2;
-    auto function_1 = get_arguments()[2];
-    auto function_2 = get_arguments()[3];
+    auto function_1 = get_arguments()[0];
+    auto function_2 = get_arguments()[1];
     obj_1<<"obj_"<<function_1;
     obj_2<<"obj_"<<function_2;
 
@@ -67,11 +69,6 @@ private:
         RCLCPP_ERROR(this->get_logger(), "Action server not available after waiting");
         rclcpp::shutdown();
       }
-      auto goal_msg = ControlQos::Goal();
-      goal_msg.qos_expected.objective_type = function_1;
-      obj_1<<"_"<<this->get_clock()->now().seconds();
-      goal_msg.qos_expected.objective_id = obj_1.str();
-      goal_msg.qos_expected.selected_mode = "";
 
       auto send_goal_options = rclcpp_action::Client<ControlQos>::SendGoalOptions();
       send_goal_options.goal_response_callback =
@@ -80,7 +77,26 @@ private:
         std::bind(&SearchAction::feedback_callback, this, _1, _2);
       send_goal_options.result_callback =
         std::bind(&SearchAction::result_callback, this, _1);
-      this->client->async_send_goal(goal_msg, send_goal_options);
+
+      auto goal_msg_1 = ControlQos::Goal();
+      goal_msg_1.qos_expected.objective_type = function_1;
+      obj_1<<"_"<<this->get_clock()->now().seconds();
+      goal_msg_1.qos_expected.objective_id = obj_1.str();
+      goal_msg_1.qos_expected.selected_mode = "";
+
+      RCLCPP_INFO_STREAM(this->get_logger(), "Sending objective 1: "<<obj_1.str());
+      this->client->async_send_goal(goal_msg_1, send_goal_options);
+
+      auto goal_msg_2 = ControlQos::Goal();
+      goal_msg_2.qos_expected.objective_type = function_2;
+      obj_2<<"_"<<this->get_clock()->now().seconds();
+      goal_msg_2.qos_expected.objective_id = obj_2.str();
+      goal_msg_2.qos_expected.selected_mode = "";
+
+      RCLCPP_INFO_STREAM(this->get_logger(), "Sending objective 2: "<<obj_2.str());
+      this->client->async_send_goal(goal_msg_2, send_goal_options);
+
+      not_started = false;
     }
 
     if (pipeline_detected) {

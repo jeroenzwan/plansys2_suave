@@ -52,18 +52,18 @@ def generate_launch_description():
         output='screen',
         parameters=[])
 
-    inspect_cmd = Node(
+    recharge_cmd = Node(
         package='plansys2_suave',
-        executable='inspect_action_node',
-        name='inspect_action_node',
+        executable='recharge_action_node',
+        name='recharge_action_node',
         namespace=namespace,
         output='screen',
         parameters=[])
 
-    recharge_charge_cmd = Node(
+    follow_cmd = Node(
         package='plansys2_suave',
-        executable='recharge_action_node',
-        name='recharge_action_node',
+        executable='follow_action_node',
+        name='follow_action_node',
         namespace=namespace,
         output='screen',
         parameters=[])   # Create the launch description and populate
@@ -75,7 +75,7 @@ def generate_launch_description():
     ld.add_action(plansys2_cmd)
 
     ld.add_action(search_cmd)
-    ld.add_action(inspect_cmd)
     ld.add_action(recharge_cmd)
+    ld.add_action(follow_cmd)
 
     return ld

@@ -26,8 +26,8 @@ set(dependencies
 add_executable(search_action_node src/search_action_node.cpp)
 ament_target_dependencies(search_action_node ${dependencies})
 
-add_executable(inspect_action_node src/inspect_action_node.cpp)
-ament_target_dependencies(inspect_action_node ${dependencies})
+add_executable(follow_action_node src/follow_action_node.cpp)
+ament_target_dependencies(follow_action_node ${dependencies})
 
 add_executable(recharge_action_node src/recharge_action_node.cpp)
 ament_target_dependencies(recharge_action_node ${dependencies})
@@ -36,7 +36,7 @@ install(DIRECTORY launch pddl DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
   search_action_node
-  inspect_action_node
+  follow_action_node
   recharge_action_node
   ARCHIVE DESTINATION lib
   LIBRARY DESTINATION lib

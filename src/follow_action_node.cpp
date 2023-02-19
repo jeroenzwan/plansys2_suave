@@ -30,35 +30,37 @@
 
 using namespace std::chrono_literals;
 
-class InspectAction : public plansys2::ActionExecutorClient
+class FollowAction : public plansys2::ActionExecutorClient
 {
 public:
   using ControlQos = mros2_msgs::action::ControlQos;
   using GoalHandleControlQos = rclcpp_action::ClientGoalHandle<ControlQos>;
 
-  InspectAction()
-  : plansys2::ActionExecutorClient("inspect_pipeline", 250ms)
+  FollowAction()
+  : plansys2::ActionExecutorClient("follow_pipeline", 500ms)
   {
-    not_started = false;
+    RCLCPP_INFO(this->get_logger(), "At beginning of Startup");
+    not_started = true;
     pipeline_inspected = false;
     client_cb_group_ = this->create_callback_group(rclcpp::CallbackGroupType::MutuallyExclusive);
     auto sub_opt = rclcpp::SubscriptionOptions();
     sub_opt.callback_group = client_cb_group_;
     inspected_subscriber = this->create_subscription<std_msgs::msg::Bool>(
-      "pipeline/inspected", 10, std::bind(&InspectAction::inspected_callback, this, std::placeholders::_1), sub_opt
+      "pipeline/inspected", 10, std::bind(&FollowAction::inspected_callback, this, std::placeholders::_1), sub_opt
     );
     this->client = rclcpp_action::create_client<ControlQos>(this,"mros/objective");
+    RCLCPP_INFO(this->get_logger(), "At end of Startup");
   }
 
 private:
   void do_work()
   {
     using namespace std::placeholders;
-    send_feedback(0.0, "Started inspect action");
+    send_feedback(0.0, "Started follow action");
     std::stringstream obj_1;
     std::stringstream obj_2;
-    auto function_1 = get_arguments()[2];
-    auto function_2 = get_arguments()[3];
+    auto function_1 = get_arguments()[0];
+    auto function_2 = get_arguments()[1];
     obj_1<<"obj_"<<function_1;
     obj_2<<"obj_"<<function_2;
 
@@ -67,20 +69,35 @@ private:
         RCLCPP_ERROR(this->get_logger(), "Action server not available after waiting");
         rclcpp::shutdown();
       }
-      auto goal_msg = ControlQos::Goal();
-      goal_msg.qos_expected.objective_type = function_1;
-      obj_1<<"_"<<this->get_clock()->now().seconds();
-      goal_msg.qos_expected.objective_id = obj_1.str();
-      goal_msg.qos_expected.selected_mode = "";
 
+      RCLCPP_INFO(this->get_logger(), "Sending objective");
       auto send_goal_options = rclcpp_action::Client<ControlQos>::SendGoalOptions();
       send_goal_options.goal_response_callback =
-        std::bind(&InspectAction::goal_response_callback, this, _1);
+        std::bind(&FollowAction::goal_response_callback, this, _1);
       send_goal_options.feedback_callback =
-        std::bind(&InspectAction::feedback_callback, this, _1, _2);
+        std::bind(&FollowAction::feedback_callback, this, _1, _2);
       send_goal_options.result_callback =
-        std::bind(&InspectAction::result_callback, this, _1);
-      this->client->async_send_goal(goal_msg, send_goal_options);
+        std::bind(&FollowAction::result_callback, this, _1);
+
+      auto goal_msg_1 = ControlQos::Goal();
+      goal_msg_1.qos_expected.objective_type = function_1;
+      obj_1<<"_"<<this->get_clock()->now().seconds();
+      goal_msg_1.qos_expected.objective_id = obj_1.str();
+      goal_msg_1.qos_expected.selected_mode = "";
+
+      RCLCPP_INFO_STREAM(this->get_logger(), "Sending objective 1: "<<obj_1.str());
+      this->client->async_send_goal(goal_msg_1, send_goal_options);
+
+      auto goal_msg_2 = ControlQos::Goal();
+      goal_msg_2.qos_expected.objective_type = function_2;
+      obj_2<<"_"<<this->get_clock()->now().seconds();
+      goal_msg_2.qos_expected.objective_id = obj_2.str();
+      goal_msg_2.qos_expected.selected_mode = "";
+
+      RCLCPP_INFO_STREAM(this->get_logger(), "Sending objective 2: "<<obj_2.str());
+      this->client->async_send_goal(goal_msg_2, send_goal_options);
+
+      not_started = false;
     }
 
     if (pipeline_inspected) {
@@ -90,9 +107,9 @@ private:
       }
 
       this->client->async_cancel_all_goals();
-      RCLCPP_INFO(this->get_logger(), "Inspect is done");
+      RCLCPP_INFO(this->get_logger(), "Follow is done");
 
-      finish(true, 1.0, "Inspect completed");
+      finish(true, 1.0, "Follow completed");
     }
   }
 
@@ -121,7 +138,7 @@ private:
     GoalHandleControlQos::SharedPtr,
     const std::shared_ptr<const ControlQos::Feedback> feedback)
   {
-    RCLCPP_INFO(this->get_logger(), "Performing Inspect Action");
+    RCLCPP_INFO(this->get_logger(), "Performing Follow Action");
   }
 
   void result_callback(const GoalHandleControlQos::WrappedResult & result)
@@ -139,7 +156,7 @@ private:
         RCLCPP_ERROR(this->get_logger(), "Unknown result code");
         return;
     }
-    RCLCPP_INFO(this->get_logger(), "Inspect is done");
+    RCLCPP_INFO(this->get_logger(), "Follow is done");
     rclcpp::shutdown();
   }
 };
@@ -147,9 +164,9 @@ private:
 int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
-  auto node = std::make_shared<InspectAction>();
+  auto node = std::make_shared<FollowAction>();
 
-  node->set_parameter(rclcpp::Parameter("action_name", "inspect_pipeline"));
+  node->set_parameter(rclcpp::Parameter("action_name", "follow_pipeline"));
   node->trigger_transition(lifecycle_msgs::msg::Transition::TRANSITION_CONFIGURE);
 
   rclcpp::spin(node->get_node_base_interface());

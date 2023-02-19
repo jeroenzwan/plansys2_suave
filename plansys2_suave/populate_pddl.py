@@ -89,18 +89,27 @@ class ProblemGenerator(ROS2Node):
         rclpy.spin_until_future_complete(self, future)
         return future
 
-    def call_goal_service(self, _pred, _param, _type):
+    def call_goal_service(self, _pred, _params, _type):
         msg = Tree()
         node = Node()
         node.node_type = _type
         node.name = _pred
 
+        # param_list = []
+        # for _param in _params:
+        #     param = Param()
+        #     param.name = _param[0]
+        #     param.type = _param[1]
+        #     param_list.append(param)
+
+        # node.parameters = param_list
+
         param = Param()
-        param.name = _param[0]
-        param.type = _param[1]
+        param.name = _params[0]
+        param.type = _params[1]
 
         node.parameters = [param]
-
+        
         msg.nodes = [node]
 
         req = AddProblemGoal.Request()
@@ -132,59 +141,94 @@ class ProblemGenerator(ROS2Node):
         return future
 
     def populate_instances(self):
-        self.call_instance_service('bluerov', 'uuv')
+        # self.call_instance_service('leia', 'robot')
+        # self.call_instance_service('entrance', 'room')
+        # self.call_instance_service('kitchen', 'room')
+        # self.call_instance_service('bedroom', 'room')
+        # self.call_instance_service('dinning', 'room')
+        # self.call_instance_service('bathroom', 'room')
+        # self.call_instance_service('chargingroom', 'room')
 
+        # self.call_predicate_service('connected',
+        #         [['entrance','room'],
+        #             ['dinning','room']])
+        # self.call_predicate_service('connected',
+        #         [['dinning','room'],
+        #             ['entrance','room']])
+
+        # self.call_predicate_service('connected',
+        #         [['dinning','room'],
+        #             ['kitchen','room']])
+        # self.call_predicate_service('connected',
+        #         [['kitchen','room'],
+        #             ['dinning','room']])
+
+        # self.call_predicate_service('connected',
+        #         [['dinning','room'],
+        #             ['bedroom','room']])
+        # self.call_predicate_service('connected',
+        #         [['bedroom','room'],
+        #             ['dinning','room']])
+
+        # self.call_predicate_service('connected',
+        #         [['bathroom','room'],
+        #             ['bedroom','room']])
+        # self.call_predicate_service('connected',
+        #         [['bedroom','room'],
+        #             ['bathroom','room']])
+
+        # self.call_predicate_service('connected',
+        #         [['chargingroom','room'],
+        #             ['kitchen','room']])
+        # self.call_predicate_service('connected',
+        #         [['kitchen','room'],
+        #             ['chargingroom','room']])
+
+        # self.call_predicate_service('charging_point_at', [['chargingroom','room']])
+        # self.call_predicate_service('battery_low', [['leia','robot']])
+        # self.call_predicate_service('robot_at',
+        #         [['leia','robot'],
+        #             ['entrance','room']])
+
+        # self.call_goal_service('robot_at', [['leia', 'robot'],['bathroom','room']], 5)
+
+        self.call_instance_service('bluerov', 'uuv')
         self.call_instance_service('pl1', 'pipeline')
 
         self.call_instance_service('f_action', 'function')
-
         self.call_instance_service('fd_recharge', 'functiondesign')
-
         self.call_instance_service('fd_search_pipeline', 'functiondesign')
-
         self.call_instance_service('fd_follow_pipeline', 'functiondesign')
 
         self.call_instance_service('f_maintain_motion', 'function')
+        self.call_instance_service('fd_set_speed_high', 'functiondesign')
+        self.call_instance_service('fd_set_speed_medium', 'functiondesign')
+        self.call_instance_service('fd_set_speed_low', 'functiondesign')
 
         self.call_instance_service('f_go_to_recharge_waypoints', 'function')
-
-        self.call_instance_service('f_search_pipeline_waypoints', 'function')
-
-        self.call_instance_service('f_follow_pipeline_waypoints', 'function')
-
-        self.call_instance_service('fd_all_thrusters', 'functiondesign')
-
-        self.call_instance_service('fd_recover', 'functiondesign')
-
         self.call_instance_service('fd_generate_recharge_wp', 'functiondesign')
-
+        
+        self.call_instance_service('f_search_pipeline_waypoints', 'function')
         self.call_instance_service('fd_spiral_low', 'functiondesign')
-
         self.call_instance_service('fd_spiral_medium', 'functiondesign')
-
         self.call_instance_service('fd_spiral_high', 'functiondesign')
-
+        
+        self.call_instance_service('f_follow_pipeline_waypoints', 'function')
         self.call_instance_service('fd_generate_follow_wp', 'functiondesign')
 
         self.call_predicate_service('pipeline_not_found', [['pl1','pipeline']])
-
         self.call_predicate_service('pipeline_not_inspected', [['pl1','pipeline']])
 
-        # self.call_predicate_service('recharge_available',
-                # [['fd_recharge','functiondesign']])
-
-        # self.call_predicate_service('search_available',
-                # [['fd_search_pipeline','functiondesign']])
-
-        # self.call_predicate_service('follow_available',
-                # [['fd_follow_pipeline','functiondesign']])
-
         self.call_predicate_service('fd_available',
-                [['fd_all_thrusters','functiondesign'],
+                [['fd_set_speed_high','functiondesign'],
                     ['f_maintain_motion','function']])
 
         self.call_predicate_service('fd_available',
-                [['fd_recover','functiondesign'],
+                [['fd_set_speed_medium','functiondesign'],
+                    ['f_maintain_motion','function']])
+
+        self.call_predicate_service('fd_available',
+                [['fd_set_speed_low','functiondesign'],
                     ['f_maintain_motion','function']])
 
         self.call_predicate_service('fd_available',
@@ -223,10 +267,13 @@ class ProblemGenerator(ROS2Node):
                     ['f_maintain_motion','function']])
         
         self.call_function_service('speed',
-                [['fd_all_thrusters','functiondesign']], 1.)
+                [['fd_set_speed_high','functiondesign']], 3.)
 
         self.call_function_service('speed',
-                [['fd_recover','functiondesign']], 100.)
+                [['fd_set_speed_medium','functiondesign']], 2.)
+
+        self.call_function_service('speed',
+                [['fd_set_speed_low','functiondesign']], 1.)
 
         self.call_function_service('speed',
                 [['fd_generate_recharge_wp','functiondesign']], 5.)
@@ -244,13 +291,16 @@ class ProblemGenerator(ROS2Node):
                 [['fd_generate_follow_wp','functiondesign']], 5.)
 
         self.call_function_service('battery_usage',
-                [['fd_all_thrusters','functiondesign']], 1.)
+                [['fd_set_speed_high','functiondesign']], 1.)
 
         self.call_function_service('battery_usage',
-                [['fd_generate_follow_wp','functiondesign']], 5.)
+                [['fd_set_speed_medium','functiondesign']], 2.)
 
         self.call_function_service('battery_usage',
-                [['fd_recover','functiondesign']], 5.)
+                [['fd_set_speed_low','functiondesign']], 3.)
+
+        self.call_function_service('battery_usage',
+                [['fd_generate_recharge_wp','functiondesign']], 5.)
 
         self.call_function_service('battery_usage',
                 [['fd_spiral_low','functiondesign']], 30.)
@@ -265,7 +315,7 @@ class ProblemGenerator(ROS2Node):
                 [['fd_generate_follow_wp','functiondesign']], 30.)
 
         self.call_function_service('battery_level',
-                [['bluerov','uuv']], 40.)
+                [['bluerov','uuv']], 100.)
 
         self.call_goal_service('pipeline_inspected', ['pl1', 'pipeline'], 5)
 
