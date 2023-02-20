@@ -64,6 +64,9 @@ private:
     obj_1<<"obj_"<<function_1;
     obj_2<<"obj_"<<function_2;
 
+    auto fd_1 = get_arguments()[3];
+    auto fd_2 = get_arguments()[4];
+
     if (not_started) {
       if (!this->client->wait_for_action_server()) {
         RCLCPP_ERROR(this->get_logger(), "Action server not available after waiting");
@@ -82,7 +85,7 @@ private:
       goal_msg_1.qos_expected.objective_type = function_1;
       obj_1<<"_"<<this->get_clock()->now().seconds();
       goal_msg_1.qos_expected.objective_id = obj_1.str();
-      goal_msg_1.qos_expected.selected_mode = "";
+      goal_msg_1.qos_expected.selected_mode = fd_1;
 
       RCLCPP_INFO_STREAM(this->get_logger(), "Sending objective 1: "<<obj_1.str());
       this->client->async_send_goal(goal_msg_1, send_goal_options);
@@ -91,7 +94,7 @@ private:
       goal_msg_2.qos_expected.objective_type = function_2;
       obj_2<<"_"<<this->get_clock()->now().seconds();
       goal_msg_2.qos_expected.objective_id = obj_2.str();
-      goal_msg_2.qos_expected.selected_mode = "";
+      goal_msg_2.qos_expected.selected_mode = fd_2;
 
       RCLCPP_INFO_STREAM(this->get_logger(), "Sending objective 2: "<<obj_2.str());
       this->client->async_send_goal(goal_msg_2, send_goal_options);
@@ -107,6 +110,8 @@ private:
 
       this->client->async_cancel_all_goals();
       RCLCPP_INFO(this->get_logger(), "Search is done");
+
+      rclcpp::sleep_for(1s);
 
       finish(true, 1.0, "Search completed");
     }
