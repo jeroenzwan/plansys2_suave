@@ -59,8 +59,8 @@ private:
     send_feedback(0.0, "Started follow action");
     std::stringstream obj_1;
     std::stringstream obj_2;
-    auto function_1 = get_arguments()[0];
-    auto function_2 = get_arguments()[1];
+    auto function_1 = get_arguments()[1];
+    auto function_2 = get_arguments()[2];
     obj_1<<"obj_"<<function_1;
     obj_2<<"obj_"<<function_2;
 
