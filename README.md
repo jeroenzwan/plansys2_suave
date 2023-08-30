@@ -30,3 +30,61 @@ In the plansys_terminal, run plan:
 ```bash
 get plan
 ```
+
+## Running full simulation
+
+Make sure to navigate to the pipeline inspection workspace and source for every new terminal opened.
+
+```bash
+source install/setup.sh
+```
+
+Start ardusub simulation of UUV:
+
+```bash
+sim_vehicle.py -L RATBeach -v ArduSub --model=JSON --console
+```
+
+In a new terminal start the gazebo simulation:
+
+```bash
+ros2 launch suave simulation.launch.py x:=17.0 y:=2.0
+```
+
+Next, in a new terminal launch the action nodes and load in the PDDL file:
+
+```bash
+ros2 launch plansys2_suave plansys2_simple_launch.py
+```
+
+Afterwards, in a new terminal launch the system modes monitor to gain an insight
+into the current system modes being used:
+
+```bash
+ros2 launch system_modes mode_monitor.launch.py
+modelfile:=src/suave/suave/config/suave_modes.yaml
+```
+
+Start mission file in a new terminal:
+
+```bash
+ros2 run suave_missions start_mission
+```
+
+Run the plan handler node in a new terminal:
+
+```bash
+ros2 run mros2_mock plan_handler_node
+```
+
+Following, launch system modes with the system modes bridge and all the monitor nodes:
+
+```bash
+ros2 launch suave_metacontrol mock_suave_metacontrol.launch.py
+```
+
+Finally, launch the mros reasoner:
+
+```bash
+ros2 launch suave_metacontrol metacontrol.launch.py
+```
